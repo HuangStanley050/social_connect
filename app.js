@@ -1,15 +1,22 @@
 const express = require("express");
-const mongo_connect = require("./config/mongo_connect_string").connect_string;
+const mongo_connect = require("./config/mongo_connect_string");
 const mongoose = require("mongoose");
+const Users = require("./routes/api/users");
+const Profile = require("./routes/api/profile");
+const Posts = require("./routes/api/posts");
 const app = express();
 
 const port = 8081 || process.env.PORT; //remember to swap before deploy to heroku
 
 app.get("/", (req, res) => res.send("hello world"));
 
+app.use("/api/users", Users);
+app.use("/api/profile", Profile);
+app.use("/api/posts", Posts);
+
 mongoose
   .connect(
-    mongo_connect,
+    mongo_connect.connect_string,
     { useNewUrlParser: true }
   )
   .then(() =>

@@ -4,9 +4,13 @@ const mongoose = require("mongoose");
 const Users = require("./routes/api/users");
 const Profile = require("./routes/api/profile");
 const Posts = require("./routes/api/posts");
+const bodyParser = require("body-parser");
 const app = express();
 
 const port = 8081 || process.env.PORT; //remember to swap before deploy to heroku
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.get("/", (req, res) => res.send("hello world"));
 

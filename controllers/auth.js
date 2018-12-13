@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const secret = require("../config/jwtsecret");
 
 exports.register = (req, res, next) => {
   User.findOne({ email: req.body.email }).then(user => {
@@ -51,7 +53,13 @@ exports.login = (req, res, next) => {
         .compare(password, user.password)
         .then(isMatch => {
           if (isMatch) {
-            res.json({ msg: "Success" });
+            const payload = {
+              id: user.id,
+              name: user.name,
+              avatar: user.avatar
+            };
+            const token = jwt.sign(payload, secret.secret, { expiresIn: "1h" });
+            res.status(200).json({ success: true, token: "Bearer " + token });
           } else {
             return res.status(400).json({ password: "Not correct password" });
           }
@@ -59,4 +67,12 @@ exports.login = (req, res, next) => {
         .catch(err => console.log(err));
     })
     .catch(err => console.log(err));
+};
+
+exports.currentUser = (req, res) => {
+  res.json({
+    id: req.user.id,
+    name: req.user.name,
+    email: req.user.email
+  });
 };

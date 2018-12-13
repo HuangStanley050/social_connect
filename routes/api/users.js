@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 const authController = require("../../controllers/auth");
 
 // @GET /api/users/test
@@ -21,5 +22,15 @@ router.post("/register", authController.register);
 // @access public
 
 router.post("/login", authController.login);
+
+// @GET /api/users/current
+// @desc return current user
+// @access private
+
+router.get(
+  "/current",
+  passport.authenticate("jwt", { session: false }),
+  authController.currentUser
+);
 
 module.exports = router;

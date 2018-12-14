@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const secret = require("../config/jwtsecret");
 const validateRegisterInput = require("../validation/register")
   .validateRegisterInput;
+const validateLoginInput = require("../validation/login").validateLoginInput;
 
 exports.register = (req, res, next) => {
   const { errors, isValid } = validateRegisterInput(req.body);
@@ -50,13 +51,20 @@ exports.register = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
+  const { errors, isValid } = validateLoginInput(req.body);
+
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   const email = req.body.email;
   const password = req.body.password;
 
   User.findOne({ email: email })
     .then(user => {
       if (!user) {
-        return res.status(404).json({ email: "user email not found" });
+        errors.email = "User Email not found";
+        return res.status(404).json(errors);
       }
       bcrypt
         .compare(password, user.password)
@@ -70,7 +78,8 @@ exports.login = (req, res, next) => {
             const token = jwt.sign(payload, secret.secret, { expiresIn: "1h" });
             res.status(200).json({ success: true, token: "Bearer " + token });
           } else {
-            return res.status(400).json({ password: "Not correct password" });
+            errors.password = "Password not correct";
+            return res.status(400).json(errors);
           }
         })
         .catch(err => console.log(err));

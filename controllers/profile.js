@@ -4,13 +4,18 @@ const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const secret = require("../config/jwtsecret");
-const validateRegisterInput = require("../validation/register")
-  .validateRegisterInput;
-const validateLoginInput = require("../validation/login").validateLoginInput;
+
+const validateProfileInput = require("../validation/profile")
+  .validateProfileInput;
 
 exports.createProfile = (req, res) => {
+  const { errors, isValid } = validateProfileInput(req.body);
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   const profileFields = {};
-  const errors = {};
+  const errorsMsg = {};
   profileFields.user = req.user.id;
   if (req.body.handle) profileFields.handle = req.body.handle;
   if (req.body.company) profileFields.company = req.body.company;
@@ -49,8 +54,8 @@ exports.createProfile = (req, res) => {
         Profile.findOne({ handle: profileFields.handle })
           .then(profile => {
             if (profile) {
-              errors.handle = "That handle already exists";
-              res.status(400).json(errors);
+              errorsMsg.handle = "That handle already exists";
+              res.status(400).json(errorsMsg);
             }
             new Profile(profileFields)
               .save()

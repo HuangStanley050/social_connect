@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const authController = require("../../controllers/auth");
+const profileController = require("../../controllers/profile");
 const Profile = require("../../models/Profile");
 const User = require("../../models/User");
 
@@ -23,6 +24,16 @@ router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
   authController.currentProfile
+);
+
+// @POST /api/profile
+// @desc create or update a profile
+// @access private
+
+router.post(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  profileController.createProfile
 );
 
 module.exports = router;

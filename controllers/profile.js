@@ -8,6 +8,8 @@ const secret = require("../config/jwtsecret");
 const validateProfileInput = require("../validation/profile")
   .validateProfileInput;
 
+const { validateExperienceInput } = require("../validation/experience");
+
 exports.getAllProfiles = (req, res) => {
   const errors = {};
   Profile.find()
@@ -119,6 +121,10 @@ exports.createProfile = (req, res) => {
 };
 
 exports.createExperience = (req, res) => {
+  const { errors, isValid } = validateExperienceInput(req.body);
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
   Profile.findOne({ user: req.user.id })
     .then(profile => {
       const newExp = {

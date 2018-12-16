@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Profile = require("../models/Profile");
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -93,4 +94,17 @@ exports.currentUser = (req, res) => {
     name: req.user.name,
     email: req.user.email
   });
+};
+
+exports.currentProfile = (req, res) => {
+  const errors = {};
+  Profile.findOne({ user: req.user.id })
+    .then(profile => {
+      if (!profile) {
+        errors.noprofile = "There is no profile for this user";
+        return res.status(404).json(errors);
+      }
+      res.json(profile);
+    })
+    .catch(err => res.status(404).json(err));
 };

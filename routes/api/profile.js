@@ -26,6 +26,23 @@ router.get(
   authController.currentProfile
 );
 
+// @GET /api/profile/all
+// @desc get all profiles
+// @access public
+
+router.get("/all", profileController.getAllProfiles);
+
+// @GET /api/profile/handle/:handle
+// @desc get profile by handle
+// @access public
+router.get("/handle/:handle", profileController.getProfileHandle);
+
+// @GET /api/profile/user/:user_id
+// @desc get profile by user ID
+// @access public
+
+router.get("/user/:user_id", profileController.getProfileId);
+
 // @POST /api/profile
 // @desc create or update a profile
 // @access private

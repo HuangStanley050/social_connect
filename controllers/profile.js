@@ -8,6 +8,56 @@ const secret = require("../config/jwtsecret");
 const validateProfileInput = require("../validation/profile")
   .validateProfileInput;
 
+exports.getAllProfiles = (req, res) => {
+  const errors = {};
+  Profile.find()
+    .populate("user", ["name", "avatar"])
+    .then(profiles => {
+      if (!profiles) {
+        errors.noprofile = "There are no profiles";
+        return res.status(404).json(errors);
+      }
+      res.json(profiles);
+    })
+    .catch(err => {
+      console.log(err);
+      errors.noprofile = "There are no profiles";
+      res.status(500).json(errors);
+    });
+};
+
+exports.getProfileHandle = (req, res) => {
+  const errors = {};
+  Profile.findOne({ handle: req.params.handle })
+    .populate("user", ["name", "avatar"])
+    .then(profile => {
+      if (!profile) {
+        errors.profile = "There is no profile for this user";
+        res.status(404).json(errors);
+      }
+      res.json(profile);
+    })
+    .catch(err => res.status(500).json(err));
+};
+
+exports.getProfileId = (req, res) => {
+  const errors = {};
+  Profile.findOne({ user: req.params.user_id })
+    .populate("user", ["name", "avatar"])
+    .then(profile => {
+      if (!profile) {
+        errors.profile = "There is no profile for this user";
+        res.status(404).json(errors);
+      }
+      res.json(profile);
+    })
+    .catch(err => {
+      console.log(err);
+      errors.profile = "There is no profile for this user";
+      res.status(404).json(errors);
+    });
+};
+
 exports.createProfile = (req, res) => {
   const { errors, isValid } = validateProfileInput(req.body);
   if (!isValid) {

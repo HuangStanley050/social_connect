@@ -117,3 +117,25 @@ exports.createProfile = (req, res) => {
     })
     .catch(err => res.status(404).json(err));
 };
+
+exports.createExperience = (req, res) => {
+  Profile.findOne({ user: req.user.id })
+    .then(profile => {
+      const newExp = {
+        title: req.body.title,
+        company: req.body.company,
+        location: req.body.location,
+        from: req.body.from,
+        to: req.body.to,
+        current: req.body.current,
+        description: req.body.description
+      };
+      //add to experience array in Profile collection
+      profile.experience.unshift(newExp);
+      profile
+        .save()
+        .then(profile => res.json(profile))
+        .catch(err => res.json(err));
+    })
+    .catch(err => res.json(err));
+};

@@ -53,4 +53,14 @@ router.post(
   profileController.createProfile
 );
 
+// @POST /api/profile/experience
+// @desc add experience to profile
+// @access private
+
+router.post(
+  "/experience",
+  passport.authenticate("jwt", { session: false }),
+  profileController.createExperience
+);
+
 module.exports = router;

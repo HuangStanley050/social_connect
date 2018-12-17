@@ -9,6 +9,7 @@ const validateProfileInput = require("../validation/profile")
   .validateProfileInput;
 
 const { validateExperienceInput } = require("../validation/experience");
+const { validateEducationInput } = require("../validation/education");
 
 exports.getAllProfiles = (req, res) => {
   const errors = {};
@@ -138,6 +139,33 @@ exports.createExperience = (req, res) => {
       };
       //add to experience array in Profile collection
       profile.experience.unshift(newExp);
+      profile
+        .save()
+        .then(profile => res.json(profile))
+        .catch(err => res.json(err));
+    })
+    .catch(err => res.json(err));
+};
+
+exports.createEducation = (req, res) => {
+  const { errors, isValid } = validateEducationInput(req.body);
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  Profile.findOne({ user: req.user.id })
+    .then(profile => {
+      const newEdu = {
+        school: req.body.school,
+        degree: req.body.degree,
+        fieldofstudy: req.body.fieldofstudy,
+        from: req.body.from,
+        to: req.body.to,
+        current: req.body.current,
+        description: req.body.description
+      };
+      //add to experience array in Profile collection
+      profile.education.unshift(newEdu);
       profile
         .save()
         .then(profile => res.json(profile))

@@ -193,3 +193,23 @@ exports.deleteExperience = (req, res) => {
     })
     .catch(err => res.status(404).json(err));
 };
+
+exports.deleteEducation = (req, res) => {
+  Profile.findOne({ user: req.user.id })
+    .then(profile => {
+      const removeIndex = profile.education
+        .map(item => item.id)
+        .indexOf(req.params.edu_id);
+      const copyOfEducation = profile.education.slice();
+      copyOfEducation.splice(removeIndex, 1);
+      profile.education = copyOfEducation.slice();
+      /*
+      profile.experience.splice(removeIndex,1); ---->modififying the original array
+      */
+      profile
+        .save()
+        .then(profile => res.json(profile))
+        .catch(err => res.json(err));
+    })
+    .catch(err => res.status(404).json(err));
+};

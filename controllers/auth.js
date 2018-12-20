@@ -43,7 +43,7 @@ exports.register = (req, res, next) => {
           newUser.password = hash;
           newUser
             .save()
-            .then(user => res.json({ user: user }))
+            .then(user => res.json(user))
             .catch(err => console.log(err));
         });
       });

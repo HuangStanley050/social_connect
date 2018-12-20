@@ -6,6 +6,7 @@ const passport = require("passport");
 const Profile = require("./routes/api/profile");
 const Posts = require("./routes/api/posts");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const app = express();
 
 const port = 8081 || process.env.PORT; //remember to swap before deploy to heroku
@@ -16,7 +17,7 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 
 require("./config/passport")(passport);
-
+app.use(cors());
 app.use("/api/users", Users);
 app.use("/api/profile", Profile);
 app.use("/api/posts", Posts);

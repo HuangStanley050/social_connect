@@ -21,7 +21,25 @@ exports.createPost = (req, res) => {
     .catch(err => res.json(err));
 };
 
-exports.deletePost = (req, res) => {};
+exports.deletePost = (req, res) => {
+  Profile.findOne({ user: req.user.id })
+    .then(profile => {
+      Post.findById(req.params.id)
+        .then(post => {
+          if (post.user.toString() !== req.user.id) {
+            return res
+              .status(401)
+              .json({ notauthorized: "User not authorized" });
+          }
+          post.remove().then(() => res.json({ success: true }));
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(404).json({ postnotfound: "Post not found" });
+        });
+    })
+    .catch(err => res.json(err));
+};
 
 exports.getPosts = (req, res) => {
   Post.find()

@@ -94,7 +94,37 @@ exports.likePost = (req, res, next) => {
     })
     .then(post => res.json(post))
     .catch(err => {
+      console.log(err);
       res.status(500).json({ unable: "Can't like post" });
-      next(err);
+    });
+};
+
+exports.unLikePost = (req, res) => {
+  Profile.findOne({ user: req.user.id })
+    .then(profile => {
+      return Post.findById(req.params.id);
+    })
+    .then(post => {
+      if (
+        post.likes.filter(like => like.user.toString() === req.user.id)
+          .length === 0
+      ) {
+        return res
+          .status(400)
+          .json({ notliked: "You have not yet liked this post" });
+      }
+      /*post.likes.unshift({ user: req.user.id });
+      return post.save();*/
+      const removeIndex = post.likes
+        .map(item => item.user.toString())
+        .indexOf(req.user.id);
+
+      post.likes.splice(removeIndex, 1);
+      return post.save();
+    })
+    .then(post => res.json(post))
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ unable: "Can't like post" });
     });
 };

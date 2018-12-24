@@ -53,4 +53,14 @@ router.post(
   postController.likePost
 );
 
+//@POST /api/posts/unlike/:id
+// @desc unlike a post
+// @access private
+
+router.post(
+  "/unlike/:id",
+  passport.authenticate("jwt", { session: false }),
+  postController.unLikePost
+);
+
 module.exports = router;

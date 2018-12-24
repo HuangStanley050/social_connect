@@ -41,6 +41,24 @@ exports.deletePost = (req, res) => {
     .catch(err => res.json(err));
 };
 
+//================ This is a function as an example to escape the .then hell from above function
+//===================================================
+const test_chain = (req, res) => {
+  Profile.findOne({ user: req.user.id })
+    .then(profile => {
+      return Post.findById(req.params.id);
+    })
+    .then(post => {
+      if (post.user.toString() !== req.user.id) {
+        return res.status(401).json({ notauthorized: "User not authorized" });
+      }
+      return post.remove();
+    })
+    .then(() => res.json({ success: true }))
+    .catch(err => res.status(500).json(err));
+};
+//================================================================
+
 exports.getPosts = (req, res) => {
   Post.find()
     .sort({ date: -1 })
@@ -54,5 +72,29 @@ exports.getPost = (req, res) => {
     .catch(err => {
       console.log(err);
       res.status(404).json({ nopostfound: "no post found" });
+    });
+};
+
+exports.likePost = (req, res, next) => {
+  Profile.findOne({ user: req.user.id })
+    .then(profile => {
+      return Post.findById(req.params.id);
+    })
+    .then(post => {
+      if (
+        post.likes.filter(like => like.user.toString() === req.user.id).length >
+        0
+      ) {
+        return res
+          .status(400)
+          .json({ alreadyliked: "User already liked this post" });
+      }
+      post.likes.unshift({ user: req.user.id });
+      return post.save();
+    })
+    .then(post => res.json(post))
+    .catch(err => {
+      res.status(500).json({ unable: "Can't like post" });
+      next(err);
     });
 };

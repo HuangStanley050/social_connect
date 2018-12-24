@@ -43,4 +43,14 @@ router.delete(
   postController.deletePost
 );
 
+//@POST /api/posts/like/:id
+// @desc like a post
+// @access private
+
+router.post(
+  "/like/:id",
+  passport.authenticate("jwt", { session: false }),
+  postController.likePost
+);
+
 module.exports = router;

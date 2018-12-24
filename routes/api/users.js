@@ -17,7 +17,7 @@ router.get("/test", (req, res) => {
 
 router.post("/register", authController.register);
 
-// @POSt /api/users/login
+// @POST /api/users/login
 // @desc login a user returns a jwt token
 // @access public
 

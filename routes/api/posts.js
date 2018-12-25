@@ -63,4 +63,24 @@ router.post(
   postController.unLikePost
 );
 
+//@POST /api/posts/comment/:id
+// @desc add a comment to a post
+// @access private
+
+router.post(
+  "/comment/:id",
+  passport.authenticate("jwt", { session: false }),
+  postController.addComment
+);
+
+//@DELETE /api/posts/comment/:id/:comment_id
+// @desc delete a comment to a post
+// @access private
+
+router.delete(
+  "/comment/:id/:comment_id",
+  passport.authenticate("jwt", { session: false }),
+  postController.deleteComment
+);
+
 module.exports = router;

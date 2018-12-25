@@ -128,3 +128,52 @@ exports.unLikePost = (req, res) => {
       res.status(500).json({ unable: "Can't like post" });
     });
 };
+
+exports.addComment = (req, res) => {
+  const { errors, isValid } = validatePostInput(req.body);
+
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  Post.findById(req.params.id)
+    .then(post => {
+      if (!post) {
+        const error = new Error("No post found");
+        //console.log(error);
+        throw error;
+      }
+      const newComment = {
+        text: req.body.text,
+        name: req.body.name,
+        avatar: req.body.avatar,
+        user: req.user.id
+      };
+      post.comments.unshift(newComment);
+      return post.save();
+    })
+    .then(post => res.json(post))
+    .catch(err => res.status(404).json(err.message));
+};
+
+exports.deleteComment = (req, res) => {
+  Post.findById(req.params.id)
+    .then(post => {
+      if (
+        post.comments.filter(
+          comment => comment._id.toString() === req.params.comment_id
+        ).length === 0
+      ) {
+        const error = new Error("Comment doesn't exist");
+        throw error;
+      }
+      const removeIndex = post.comments
+        .map(item => item._id.toString())
+        .indexOf(req.params.comment_id);
+
+      post.comments.splice(removeIndex, 1);
+      return post.save();
+    })
+    .then(post => res.json(post))
+    .catch(err => res.status(404).json(err.message));
+};

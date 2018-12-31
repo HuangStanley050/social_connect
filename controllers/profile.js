@@ -62,6 +62,7 @@ exports.getProfileId = (req, res) => {
 };
 
 exports.createProfile = (req, res) => {
+  //console.log(req.body);
   const { errors, isValid } = validateProfileInput(req.body);
   if (!isValid) {
     return res.status(400).json(errors);
@@ -212,4 +213,13 @@ exports.deleteEducation = (req, res) => {
         .catch(err => res.json(err));
     })
     .catch(err => res.status(404).json(err));
+};
+
+exports.deleteAccount_Profile = (req, res) => {
+  Profile.findOneAndDelete({ user: req.user.id })
+    .then(() => {
+      return User.findOneAndRemove({ _id: req.user.id });
+    })
+    .then(() => res.json({ success: true }))
+    .catch(err => res.status(500).json(err));
 };

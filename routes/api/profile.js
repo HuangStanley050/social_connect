@@ -93,4 +93,14 @@ router.delete(
   profileController.deleteEducation
 );
 
+// @DELETE /api/profile/
+// @desc delete user profile and account
+// @access private
+
+router.delete(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  profileController.deleteAccount_Profile
+);
+
 module.exports = router;

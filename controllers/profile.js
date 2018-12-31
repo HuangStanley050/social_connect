@@ -218,7 +218,7 @@ exports.deleteEducation = (req, res) => {
 exports.deleteAccount_Profile = (req, res) => {
   Profile.findOneAndDelete({ user: req.user.id })
     .then(() => {
-      return User.findOneAndRemove({ _id: req.user.id });
+      return User.findOneAndDelete({ _id: req.user.id });
     })
     .then(() => res.json({ success: true }))
     .catch(err => res.status(500).json(err));

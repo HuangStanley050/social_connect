@@ -29,18 +29,22 @@ exports.getAllProfiles = (req, res) => {
     });
 };
 
-exports.getProfileHandle = (req, res) => {
+exports.getProfileHandle = (req, res, next) => {
   const errors = {};
   Profile.findOne({ handle: req.params.handle })
     .populate("user", ["name", "avatar"])
     .then(profile => {
       if (!profile) {
         errors.profile = "There is no profile for this user";
-        res.status(404).json(errors);
+        //res.status(404).json(errors);
+        throw errors;
       }
       res.json(profile);
     })
-    .catch(err => res.status(500).json(err));
+    .catch(err => {
+      //res.status(500).json(err);
+      next(err);
+    });
 };
 
 exports.getProfileId = (req, res) => {
